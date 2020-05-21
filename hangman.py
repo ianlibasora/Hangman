@@ -1,73 +1,122 @@
 #!/usr/bin/env python3
 
-import os
-import random
+from os import system, name, get_terminal_size
+from random import randint
 
 """Hangman game"""
 
-clear = lambda: os.system('cls' if os.name == 'nt' else 'clear')
+clear = lambda: system('cls' if name == 'nt' else 'clear')
 
 def get_word(level):
    E = [
-      "JOHN", "MARY", "CITY", "TOWN", "PEN",
-      "WORLD", "LINUX", "PARK", "TRAIN"
+      "JOHN", "MARY", "CITY", "TOWN", "PEN", "WEB", "HELLO",
+      "WORLD", "LINUX", "PARK", "TRAIN", "NAME", "PLAY", "OPEN"
    ]
    M = [
-      "DRIMNAGH", "CASTLE", "CRUMLIN", "GAELIC", "LUNCH",
-      "ENGLISH", "BIOLOGY", "PHYSICS", "PYTHON"
+      "DRIMNAGH", "CASTLE", "CRUMLIN", "GAELIC", "LUNCH", "MATHS", "SCHOOL",
+      "ENGLISH", "BIOLOGY", "PHYSICS", "PYTHON", "JAVA", "APPLE", "LEAVING"
    ]
    H = [
-      "WALKINSTOWN", "UNIVERSITY", "COMPUTING", "SCIENCE", "GOVERNMENT",
-      "ADVENTURE", "OPERATING", "GITHUB", "STACKOVERFLOW"
+      "WALKINSTOWN", "UNIVERSITY", "COMPUTING", "SCIENCE", "GOVERNMENT", "JAVASCRIPT", "SECONDARY",
+      "ADVENTURE", "OPERATING", "GITHUB", "STACKOVERFLOW", "AMAZON", "MICROSOFT", "CORONAVIRUS"
    ]
    dct = {"1": E, "2": M, "3": H}
-   n = random.randint(0, 8)
+   n = randint(0, 13)
    return dct[level][n]
 
+def lst_update(lst, word, ltr):
+   i = 0
+   while i < len(word):
+      if word[i] == ltr:
+         lst[i] = word[i]
+      i += 1
+   return lst
+
+# game operation
 def game(word, box):
    clear()
    dct = {
-      8: "\n" + box[2] + "-------\n" + ((box[2] + "|\n") * 6) +
-      ((len(box[2]) - 5) * " ") + "--------------------------------\n",
-      7: box[2],
-      6: box[2],
-      5: box[2],
-      4: box[2],
-      3: box[2],
-      2: box[2],
-      1: box[2],
-      0: box[2]
+      7: "\n" + box[2] + "--------\n" + ((box[2] + "|\n") * 6) +
+      ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      6: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
+      ((box[2] + "|\n") * 5) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      5: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
+      (box[2] + "|      O\n") + ((box[2] + "|\n") * 4) +
+      ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      4: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
+      (box[2] + "|      O\n") + (box[2] + "|      |\n") +
+      ((box[2] + "|\n") * 3) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      3: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
+      (box[2] + "|      O\n") + (box[2] + "|      |\n") + box[2] + "|     /\n" +
+      ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      2: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
+      (box[2] + "|      O\n") + (box[2] + "|      |\n") + box[2] + "|     / \\\n" +
+      ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      1: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
+      (box[2] + "|     \\O\n") + (box[2] + "|      |\n") + box[2] + "|     / \\\n" +
+      ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      0: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
+      (box[2] + "|     \\O/\n") + (box[2] + "|      |\n") + box[2] + "|     / \\\n" +
+      ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
    }
-   print(dct[8])
 
-   life = 8
+   current = ["-" for x in word]
+   fails = set()
+   life = 7
+
    while life != 0:
+      print(dct[life])
+      print("{:^{}s} Lives Remaining: {}\n".format(" ".join(current), (box[0] - len(current)) // 2, life))
+      print(box[2] + "Wrong guesses: {}\n".format(", ".join(fails)))
 
-      life -= 1
+      check = False
+      while check is False:
+         guess = input("your guess: ").upper()
+         if guess.isalpha():
+            check = True
+         else:
+            print("\nInvalid entry, try again")
 
+      if guess in word:
+         lst_update(current, word, guess)
+         if "".join(current) == word:
+            clear()
+            print(dct[life])
+            print("{:^{}s} Lives Remaining: {}\n".format(" ".join(current), (box[0] - len(current)) // 2, life))
+            print(box[2] + "Wrong guesses: {}\n".format(", ".join(fails)))
+            return True
+      else:
+         fails.add(guess)
+         life -= 1
+
+      clear()
+
+   print(dct[life])
+   print("{:^{}s} Lives Remaining: {}\n".format(" ".join(current), (box[0] - len(current)) // 2, life))
+   print(box[2] + "Wrong guesses: {}\n".format(", ".join(fails)))
    return False
-
 
 def main():
    clear()
-   window_size = os.get_terminal_size()
+   window_size = get_terminal_size()
    pad = " " * 19
-   box = (window_size[0], window_size[1], pad)
-
+   box = (window_size[0], window_size[1], " " * 10)
 
    # intro block
    print(pad + ("-" * (window_size[0] - (len(pad) * 2))) + pad)
    print(pad + "|{:^{}s}|".format("Hangman", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + "|{:^{}s}|".format("Game", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + "|{:^{}s}|".format(" ", window_size[0] - (len(pad) * 2) - 2) + pad)
-   print(pad + "|{:^{}s}|".format("Version: 19.05.2020", window_size[0] - (len(pad) * 2) - 2) + pad)
+   print(pad + "|{:^{}s}|".format("Version: 21.05.2020", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + "|{:^{}s}|".format("By Joseph Libasora", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + ("-" * (window_size[0] - (len(pad) * 2))) + pad + "\n")
 
+   #wargame ref
+   print("Would you like to play a game?")
 
+   # game runtime management
    play = True
    while play is True:
-
       check = False
       while check is False:
          print("Pick difficulty level, 1 = Easy, 2 = Medium, 3 = Hard")
@@ -75,17 +124,16 @@ def main():
          if level in ["1", "2", "3"]:
             check = True
          else:
-            print("\nTry again, improper difficulty")
+            print("\nInvalid entry, try again")
 
-
-      if game(get_word(level), box) is True:
-         print("\nCongratulations, you win\n")
+      word = get_word(level)
+      if game(word, box) is True:
+         print("Congratulations, you win\n")
       else:
-         print("\nYou lose\n")
+         print("Too bad, the word was: " + word + ", you lose\n")
 
-
-      check = False
       print("Would you like to play again?")
+      check = False
       while check is False:
          tmp = input("Play again?: [y/n] ").lower()
          if tmp == "n":
@@ -95,7 +143,7 @@ def main():
             clear()
             check = True
          else:
-            print("\nError, invalid response")
+            print("\nInvalid entry, try again")
 
 if __name__ == "__main__":
    main()
