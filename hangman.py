@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# import os
 from os import system, name, get_terminal_size
 from random import randint
 
