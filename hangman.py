@@ -58,7 +58,7 @@ def game(word, box):
       ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
       0: "\n" + box[2] + "--------\n" + (box[2] + "|      |\n") +
       (box[2] + "|     \\O/\n") + (box[2] + "|      |\n") + box[2] + "|     / \\\n" +
-      ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n",
+      ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 26) + "\n"
    }
 
    current = ["-" for x in word]
@@ -72,7 +72,7 @@ def game(word, box):
 
       check = False
       while check is False:
-         guess = input("your guess: ").upper()
+         guess = input("Your guess: ").upper()
          if guess.isalpha():
             check = True
          else:
@@ -108,27 +108,29 @@ def main():
    print(pad + "|{:^{}s}|".format("Hangman", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + "|{:^{}s}|".format("Game", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + "|{:^{}s}|".format(" ", window_size[0] - (len(pad) * 2) - 2) + pad)
-   print(pad + "|{:^{}s}|".format("Version: 21.05.2020", window_size[0] - (len(pad) * 2) - 2) + pad)
+   print(pad + "|{:^{}s}|".format("Version: 15.06.2020", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + "|{:^{}s}|".format("By Joseph Libasora", window_size[0] - (len(pad) * 2) - 2) + pad)
    print(pad + ("-" * (window_size[0] - (len(pad) * 2))) + pad + "\n")
+   print(box[2] + "--------\n" + (box[2] + "|      |\n") +
+      (box[2] + "|     \\O/\n") + (box[2] + "|      |\n") + box[2] + "|     / \\\n" +
+      ((box[2] + "|\n") * 2) + ((len(box[2]) - 5) * " ") + ("-" * 32) + "\n")
 
    #wargame ref
    print("Would you like to play a game?")
+   check = False
+   while check is False:
+      print("Pick difficulty level, 1 = Easy, 2 = Medium, 3 = Hard")
+      level = input("Difficulty level: ")
+      if level in ["1", "2", "3"]:
+         check = True
+      else:
+         print("\nInvalid entry, try again")
 
    # game runtime management
    play = True
    while play is True:
-      check = False
-      while check is False:
-         print("Pick difficulty level, 1 = Easy, 2 = Medium, 3 = Hard")
-         level = input("Difficulty level: ")
-         if level in ["1", "2", "3"]:
-            check = True
-         else:
-            print("\nInvalid entry, try again")
-
       word = get_word(level)
-      if game(word, box) is True:
+      if game(word, box):
          print("Congratulations, you win\n")
       else:
          print("Too bad, the word was: " + word + ", you lose\n")
